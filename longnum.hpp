@@ -1,55 +1,67 @@
-#ifndef LONGMATH
-#define LONGMATH
+#ifndef LONGNUMBER_HPP
+#define LONGNUMBER_HPP
 
-#include <vector> 
-#include <string> 
-#include <iostream> 
+#include <vector>
+#include <string>
+#include <algorithm>
+#include <iostream>
+#include <cmath>
+#include <stdexcept>
 
-namespace LongMath{
-    class LongNumber{ 
-    private:
-        std::vector<short> digits; 
-        unsigned decimalPoint; 
-        unsigned precision; 
-        bool isNegative; 
+namespace LongArithmetic {
 
-        void trimLeadingZeros(); 
-        bool isZeroValue() const; 
-        int getMagnitude() const; 
+class LongNumber {
+private:
+    std::vector<bool> bits;
+    int precision;
+    bool isNegative;
 
-    public:
-        LongNumber(); 
-        explicit LongNumber(const std::string& value); 
-        explicit LongNumber(int value);
-        LongNumber(int value, int customPrecision);
+    void normalize();
+    void addBit(bool bit);
+    bool isZero() const;
+    void shiftRight(int n);
+    void shiftLeft(int n);
 
-        std::string toFormattedString() const; 
-        std::string toFormattedString(int customPrecision) const; 
+public:
+    LongNumber();
+    LongNumber(int prec);
+    LongNumber(double value, int prec);
+    LongNumber(const LongNumber& other);
 
-        friend std::ostream& operator<<(std::ostream& os, const LongNumber& num); 
+    LongNumber& operator=(const LongNumber& other);
 
-        LongNumber negate() const; 
+    ~LongNumber();
 
-        friend bool areEqual(const LongNumber& num1, const LongNumber& num2);
-        friend bool isLessThan(const LongNumber& num1, const LongNumber& num2); 
-        friend bool isGreaterThan(const LongNumber& num1, const LongNumber& num2); 
-        friend bool isLessOrEqual(const LongNumber& num1, const LongNumber& num2); 
-        friend bool isGreaterOrEqual(const LongNumber& num1, const LongNumber& num2); 
-        friend bool areNotEqual(const LongNumber& num1, const LongNumber& num2); 
+    LongNumber operator+(const LongNumber& other) const;
+    LongNumber operator-(const LongNumber& other) const;
+    LongNumber operator*(const LongNumber& other) const;
+    LongNumber operator/(const LongNumber& other) const;
 
-        friend LongNumber subtract(const LongNumber& num1, const LongNumber& num2); 
-        friend LongNumber add(const LongNumber& num1, const LongNumber& num2); 
-        friend LongNumber multiply(const LongNumber& num1, const LongNumber& num2); 
-        friend LongNumber divide(const LongNumber& num1, const LongNumber& num2); 
+    LongNumber& operator+=(const LongNumber& other);
+    LongNumber& operator-=(const LongNumber& other);
+    LongNumber& operator*=(const LongNumber& other);
+    LongNumber& operator/=(const LongNumber& other);
 
-        LongNumber& subtractAssign(const LongNumber& other); 
-        LongNumber& addAssign(const LongNumber& other);
-        LongNumber& multiplyAssign(const LongNumber& other); 
-        LongNumber& divideAssign(const LongNumber& other);
-    };
-}
+    bool operator==(const LongNumber& other) const;
+    bool operator!=(const LongNumber& other) const;
+    bool operator<(const LongNumber& other) const;
+    bool operator>(const LongNumber& other) const;
+    bool operator<=(const LongNumber& other) const;
+    bool operator>=(const LongNumber& other) const;
 
-LongMath::LongNumber createFromUnsignedLongLong(unsigned long long value);
-LongMath::LongNumber createFromLongDouble(long double value); 
+    void fromDouble(double value);
+
+    void setPrecision(int prec);
+    int getPrecision() const;
+
+    void printBinary() const;
+    std::string toDecimalString() const;
+
+    static LongNumber calculatePi(int precision);
+};
+
+LongNumber operator""_longnum(long double value);
+
+} 
 
 #endif
