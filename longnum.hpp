@@ -7,12 +7,10 @@
 #include <iostream>
 #include <cmath>
 #include <stdexcept>
-
-namespace LongArithmetic {
+#include <sstream>
 
 class LongNumber {
 private:
-    std::vector<bool> bits;
     int precision;
     bool isNegative;
 
@@ -23,10 +21,13 @@ private:
     void shiftLeft(int n);
 
 public:
+    std::vector<bool> bits;
     LongNumber();
     LongNumber(int prec);
     LongNumber(double value, int prec);
     LongNumber(const LongNumber& other);
+
+    std::vector<bool> gett();
 
     LongNumber& operator=(const LongNumber& other);
 
@@ -36,6 +37,11 @@ public:
     LongNumber operator-(const LongNumber& other) const;
     LongNumber operator*(const LongNumber& other) const;
     LongNumber operator/(const LongNumber& other) const;
+
+    /*
+    func(a + b) // передаст просто значение
+    func(a += b) // передаст новый a
+    */
 
     LongNumber& operator+=(const LongNumber& other);
     LongNumber& operator-=(const LongNumber& other);
@@ -61,7 +67,5 @@ public:
 };
 
 LongNumber operator""_longnum(long double value);
-
-} 
 
 #endif
