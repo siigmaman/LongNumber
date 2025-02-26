@@ -302,7 +302,7 @@ namespace LongNumber {
 		return other;
 	}
 
-	LongMath LongMath::operator*(const LongMath& other) {
+	LongMath LongMath::operator*(const LongMath& other) const {
 		if (this->is_zero() || other.is_zero()) {
 			return LongMath("0", std::max(precision, other.precision));
 		}
@@ -494,40 +494,33 @@ namespace LongNumber {
 
 	std::string LongMath::to_decimal() const {
 		std::stringstream ss;
-		ss << to_decimal_integer();
+		ss << to_decimal_integer();	
 		bool is_null = true;
-        for (int i = 0; i < PRECISION; i++) {
-            if (this->fractional_part[i] != 0) {
-                is_null = false;
-                break;
-            }
-        }
-        if (is_null) {
-			return ss.str();
-        }
-		ss << ".";
-		LongMath fraction("1", PRECISION);
-		LongMath five_power("5", PRECISION);
-		LongMath ten("10", PRECISION);
-		LongMath five("5", PRECISION);
-		for (int i = 0; i < PRECISION / 3.33; i++) {
-			fraction *= ten;
-			if (fractional_part[i]) {
-				fraction += five_power;
+		for (int i = 0; i < PRECISION; i++) {
+			if (this->fractional_part[i] != 0) {
+				is_null = false;
+				break;
 			}
-			five_power *= five;
 		}
-		std::string frac_str = fraction.to_decimal_integer();
-		frac_str.erase(0, 1);
-		frac_str.pop_back();
-		frac_str.pop_back();
-		while (frac_str.size() > 1 && frac_str.back() == '0') {
-			frac_str.pop_back();
+		if (is_null) {
+			return ss.str();
 		}
-		ss << frac_str;
-		if (ss.str() == "0.0") {
-			return "0";
+		ss << ".";
+		LongMath current = *this;
+		current.sign = false;
+		current.integer_part.clear();
+		std::string fraction_str = "";
+		const int MAX_DECIMAL_DIGITS = 100;
+		for (int i = 0; i < MAX_DECIMAL_DIGITS && !current.is_zero(); i++) {
+			current = current * LongMath("10", precision);
+			std::string digit = current.to_decimal_integer();
+			fraction_str += digit;
+			current.integer_part.clear();
 		}
+		if (fraction_str.empty()) {
+			fraction_str = "0";
+		}
+		ss << fraction_str;
 		return ss.str();
 	}
 
@@ -631,10 +624,3 @@ namespace LongNumber {
 		return LongMath(epsilon_str, prec);
 	}
 }
-
-// int main() {
-// 	using namespace LongNumber;
-
-// 	LongMath a("10.5", 10);
-// 	std::cout << "a = " << a.to_decimal() << std::endl; 
-// }

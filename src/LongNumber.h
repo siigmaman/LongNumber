@@ -8,7 +8,7 @@
 namespace LongNumber {
 	class LongMath {
 	private:
-		const int PRECISION = 300;
+		const int PRECISION = 333;
 		std::vector<bool> integer_part;
 		std::vector<bool> fractional_part;
 		unsigned precision;
@@ -32,7 +32,7 @@ namespace LongNumber {
 
 		LongMath operator+(const LongMath& other);
 		LongMath operator-(const LongMath& other);
-		LongMath operator*(const LongMath& other);
+		LongMath operator*(const LongMath& other) const;
 		LongMath operator/(const LongMath& other) const;
 
 		LongMath& operator+=(const LongMath& other);
